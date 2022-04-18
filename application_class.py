@@ -2,9 +2,9 @@
 from wireless_network import *
 class Application:
    def __init__(self):
-      self.totalSensors = 0
-      self.listSensors = []    
-      self.sensorDict = {}
+      self.totalNoOfSensors = 0
+      self.listOfSensors = []    
+      self.sensorDictionary = {}
 
 
       welcome = WirelessNetworks()
@@ -24,14 +24,14 @@ class Application:
 
       self.seperation()
 
-      for sensor in range(1, self.totalSensors + 1):
-         sensor = WirelessNetworks()
+      for sensorNode in range(1, self.totalNoOfSensors + 1):
+         sensorNode = WirelessNetworks()
 
          id = (input('Enter the Sensor ID: '))
          while any(char.isdigit() for char in id):
             print("This is an invalid entry for sensor Id!")
             id = input('Enter the sensor ID: ')
-         sensor.setID(id)
+         sensorNode.setID(id)
          
          while True:
             try:
@@ -39,19 +39,21 @@ class Application:
                break
             except:
                print("This is an invalid entry for the number of neighbours")
-         sensor.setNeighbours(numOfNeighbours)
+         sensorNode.setNeighbours(numOfNeighbours)
 
-         for neighbour in range(1, sensor.neighbours + 1):
+         for neighbour in range(1, sensorNode.neighbours + 1):
             neighbour = WirelessNetworks()
 
-            neighbourId = input("Enter the neighbour for Sensor " + sensor.id + ": ")
-            while any(char.isdigit() for char in neighbourId ):
+            neighbourId = input("Enter the neighbour for Sensor " + sensorNode.id + ": ")
+
+            
+            while any(char.isalpha()== False for char in neighbourId):
                print("This is an invalid entry for the neighbour's name and/or distance!")
-               neighbourId = input("Enter the neighbour for sensor " + sensor.id + ": ")
+               neighbourId = input("Enter the neighbour for sensor " + sensorNode.id + ": ")
             neighbour.setID(neighbourId)
          
 
-            self.convrtToDict(sensor, neighbour)
+            self.convrtToDictionary(sensorNode, neighbour)
 
          while True:
             try:
@@ -59,7 +61,7 @@ class Application:
                break
             except:
                print("This is an invalid entry for the oxygen level!")
-         sensor.setOxygenLevel(o2Level)
+         sensorNode.setOxygenLevel(o2Level)
 
          while True:
             try:
@@ -67,21 +69,21 @@ class Application:
                break
             except:
                print("This is an invalid entry for the temperature!")
-         sensor.setTemperature(temp)
+         sensorNode.setTemperature(temp)
 
-         self.listSensors.append(sensor)
+         self.listOfSensors.append(sensorNode)
          self.seperation()
 
       self.findPath()
          
 
             
-   def convrtToDict(self, sensor, neighbour):
-      distance = (neighbour.id, int(input("Enter the distance to " + sensor.id + ": ")))
-      if sensor.id not in self.sensorDict:
-         self.sensorDict[sensor.id] = [distance]
+   def convrtToDictionary(self, sensorNode, neighbour):
+      distance = (neighbour.id, int(input("Enter the distance to " + sensorNode.id + ": ")))
+      if sensorNode.id not in self.sensorDictionary:
+         self.sensorDictionary[sensorNode.id] = [distance]
       else:
-         self.sensorDict[sensor.id].append(distance)
+         self.sensorDictionary[sensorNode.id].append(distance)
 
 
    def findPath(self):
@@ -102,8 +104,8 @@ class Application:
    def findPathHelper(self, source, destination, path):
       if source == destination:
          return(True)
-      currentMax = self.sensorDict[source][0]
-      for id, distance in self.sensorDict[source]:
+      currentMax = self.sensorDictionary[source][0]
+      for id, distance in self.sensorDictionary[source]:
          if distance > currentMax[1]:
             currentMax = (id, distance)
       path.append(currentMax[0])
@@ -112,7 +114,7 @@ class Application:
 
 
    def setTotalSensors(self, sensorCount):
-      self.totalSensors = sensorCount
+      self.totalNoOfSensors = sensorCount
 
    def seperation(self):
       print('__*__*__*__*__*__*__*__*__*__*__*__')

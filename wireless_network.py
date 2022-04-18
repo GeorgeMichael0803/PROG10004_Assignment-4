@@ -23,12 +23,14 @@ class WirelessNetworks:
     def getID(self):
        return self.id
 
+    def setTemperature(self, temp):
+        self.temperature = temp   
+
 
     def setOxygenLevel(self, o2Level):
         self.oxygenLevel = o2Level
 
-    def setTemperature(self, temp):
-        self.temperature = temp
+    
 
     def setNeighbours(self, neighbours):
         self.neighbours = neighbours
