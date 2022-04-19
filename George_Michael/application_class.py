@@ -1,120 +1,119 @@
 
-from  wireless_network import WirelessNetworks
-
+from wireless_network import *
 class Application:
-   def __init__(self):
-      self.listSensors = []
-      self.totalSensors = 0
-      self.sensorDict = {}
+   def __init__(self):                                           #constructor method of application class
+      self.totalNoOfSensors = 0
+      self.listOfSensors = []    
+      self.sensorDictionary = {}
 
 
-      network = WirelessNetworks()
-      network.greetMessage()
+      welcome = WirelessNetworks()                              #creating an object for WirelessNetwork class
+      welcome.greetMessage()                                    #calling the method to print the first statement
 
 
-      self.createSensors()
+      self.createSensors()                                      #calling the method to print the statements
    
-   def createSensors(self):
-      while True:
+   def createSensors(self):                                     #method that creates the sensors
+      while True:                                               #while for number of sensors
          try:
             numOfSensors = int(input("Enter the number of sensors: "))
             break
          except:
             print("This is an invalid entry for the number of sensors")
       self.setTotalSensors(numOfSensors)
-      print(str(self.totalSensors) + ' sensors total')
 
-      self.drawLine()
+      self.seperation()                                        #calls separation function
 
-      for sensor in range(1, self.totalSensors + 1):
-         sensor = WirelessNetworks()
+      for sensorNode in range(1, self.totalNoOfSensors + 1):   #loop for data of all the sensors
+         sensorNode = WirelessNetworks()
 
-         id = (input('Enter the sensor ID: '))
-         while any(char.isdigit() for char in id):
-            print("This is an invalid entry for the neighbour's name and/or distance!")
+         id = (input('Enter the Sensor ID: '))                 #loop for input of sensor id
+         while any(char.isdigit() for char in id):             
+            print("This is an invalid entry for sensor Id!")
             id = input('Enter the sensor ID: ')
-         sensor.setID(id)
+         sensorNode.setID(id)
          
-         while True:
+         while True:                                         #loop for input of number of neigbours
             try:
-               numOfNeighbours = int(input("Enter the number of neighbours: "))
+               noOfNeighbours = int(input("Enter the number of neighbours: "))
                break
             except:
                print("This is an invalid entry for the number of neighbours")
-         sensor.setNeighbours(numOfNeighbours)
-         print(str(sensor.neighbours) + ' neighbour(s) total')
+         sensorNode.setNeighbours(noOfNeighbours)
 
-         for neighbour in range(1, sensor.neighbours + 1):
-            neighbour = WirelessNetworks()
+         for wn in range(1, sensorNode.neighbours + 1):               #loop for details of neighbour sensors
+            wn = WirelessNetworks()
 
-            neighbourId = input("Enter the neighbour for sensor " + sensor.id + ": ")
-            while any(char.isdigit() for char in neighbourId ):
+            wnId = input("Enter the neighbour for Sensor " + sensorNode.id + ": ")
+
+            
+            while any(char.isalpha()== False for char in wnId):                        #loop for neighbour sensor name
                print("This is an invalid entry for the neighbour's name and/or distance!")
-               neighbourId = input("Enter the neighbour for sensor " + sensor.id + ": ")
-            neighbour.setID(neighbourId)
+               wnId = input("Enter the neighbour for sensor " + sensorNode.id + ": ")
+            wn.setID(wnId)
          
 
-            self.convrtToDict(sensor, neighbour)
+            self.convrtToDictionary(sensorNode, wn)                           #calling the function to convert to dictionary
 
-         while True:
+         while True:                                                          #loop for entering the oxygen level
             try:
                o2Level = int(input("Enter the Oxygen level in %: "))
                break
             except:
                print("This is an invalid entry for the oxygen level!")
-         sensor.setOxygenLevel(o2Level)
+         sensorNode.setOxygenLevel(o2Level)
 
-         while True:
+         while True:                                                         #loop for entering the temperature mesurements
             try:
                temp = float(input("Enter the temperature measurement: "))
                break
             except:
                print("This is an invalid entry for the temperature!")
-         sensor.setTemperature(temp)
+         sensorNode.setTemperature(temp)
 
-         self.listSensors.append(sensor)
-         self.drawLine()
+         self.listOfSensors.append(sensorNode)
+         self.seperation()
 
       self.findPath()
          
 
             
-   def convrtToDict(self, sensor, neighbour):
-      distance = (neighbour.id, int(input("Enter the distance (m) to " + sensor.id + ": ")))
-      if sensor.id not in self.sensorDict:
-         self.sensorDict[sensor.id] = [distance]
+   def convrtToDictionary(self, sensorNode, wn):                              #method to convert to dictionary
+      distance = (wn.id, int(input("Enter the distance to " + sensorNode.id + ": ")))
+      if sensorNode.id not in self.sensorDictionary:
+         self.sensorDictionary[sensorNode.id] = [distance]
       else:
-         self.sensorDict[sensor.id].append(distance)
-      print(self.sensorDict)
+         self.sensorDictionary[sensorNode.id].append(distance)
 
 
-
-   def findPath(self):
+   def findPath(self):                                                       #method to find path
       source = input("Enter the source sensor: ")
       path = [source]
-      dest = input("Enter the destination sensor: ")
-      if self.findPathHelper(source, dest, path):
+      destination = input("Enter the destination sensor: ")
+      try:
+         self.findPathRecurssion(source, destination, path)
          print("Path= ",path)
-      else:
-         print("The destination is not found")
+      except RecursionError:
+         print('The destination is not found')  
+
          
-   def findPathHelper(self, source, dest, path):
-      if source == dest:
+   def findPathRecurssion(self, source, destination, path):               #method for help in finding path with recurssion
+      if source == destination:
          return(True)
-      currentMax = self.sensorDict[source][0]
-      for id, distance in self.sensorDict[source]:
-         if distance > currentMax[1]:
-            currentMax = (id, distance)
-      path.append(currentMax[0])
-      return(self.findPathHelper(currentMax[0], dest, path))
+      currentMaximum = self.sensorDictionary[source][0]
+      for id, distance in self.sensorDictionary[source]:
+         if distance > currentMaximum[1]:
+            currentMaximum = (id, distance)
+      path.append(currentMaximum[0])
+      return(self.findPathRecurssion(currentMaximum[0], destination, path))
 
 
 
-   def setTotalSensors(self, sensorCount):
-      self.totalSensors = sensorCount
+   def setTotalSensors(self, sensorCount):                            #mutator method for setting the total number of sensors
+      self.totalNoOfSensors = sensorCount
 
-   def drawLine(self):
-      print('_*__*__*__*__*__*__*__*__*__*__*_')
+   def seperation(self):                                              #method to print the seperations
+      print('__*__*__*__*__*__*__*__*__*__*__*__')
 
 
-app = Application()
+obj = Application()
